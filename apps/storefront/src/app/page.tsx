@@ -16,6 +16,7 @@ import {
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardHeader,
@@ -167,41 +168,79 @@ export default function LandingPage() {
 
       {/* Hero Section */}
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-background" />
-        <div className="relative mx-auto max-w-[1280px] px-4 py-20 sm:px-6 lg:px-8 lg:py-32">
-          <div className="mx-auto max-w-3xl text-center">
+        {/* Background decorations */}
+        <div className="absolute inset-0 bg-gradient-to-br from-brand-50 via-background to-background" />
+        <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-gradient-to-bl from-brand-100/30 to-transparent blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-1/3 h-1/3 bg-gradient-to-tr from-brand-100/20 to-transparent blur-2xl" />
+        
+        {/* Grid pattern overlay */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#D6D3D1_1px,transparent_1px),linear-gradient(to_bottom,#D6D3D1_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_110%)] opacity-30" />
+        
+        <div className="relative mx-auto max-w-[1280px] px-4 py-24 sm:px-6 lg:px-8 lg:py-32">
+          <div className="mx-auto max-w-4xl text-center">
             <FadeIn delay={0.1}>
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-1.5 text-sm text-muted-foreground">
-                <span className="flex h-2 w-2 rounded-full bg-success animate-pulse" />
-                Cloud Native Commerce Platform
+              <div className="mb-6 flex items-center justify-center gap-3">
+                <span className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-brand-50 px-4 py-1.5 text-sm font-medium text-brand-700">
+                  <span className="relative flex h-2 w-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-500 opacity-75" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-600" />
+                  </span>
+                  Cloud Native Commerce Platform
+                </span>
               </div>
             </FadeIn>
+            
             <FadeIn delay={0.2}>
-              <h1 className="font-heading text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl lg:leading-tight">
+              <h1 className="font-heading text-4xl font-bold tracking-tight text-neutral-900 sm:text-5xl lg:text-6xl xl:text-7xl">
                 Launch your store on a{" "}
-                <span className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">cloud-native</span>{" "}
+                <span className="relative">
+                  <span className="relative z-10 bg-gradient-to-r from-brand-700 via-brand-600 to-brand-800 bg-clip-text text-transparent">
+                    cloud-native
+                  </span>
+                  <span className="absolute bottom-2 left-0 right-0 h-3 bg-brand-100 -z-0 -rotate-1" aria-hidden="true" />
+                </span>{" "}
                 commerce platform
               </h1>
             </FadeIn>
+            
             <FadeIn delay={0.3}>
-              <p className="mt-8 text-lg leading-relaxed text-muted-foreground sm:text-xl">
-                Multi-tenant e-commerce built with Go microservices, Next.js, and
-                Kubernetes. Scalable, isolated, and developer-first.
+              <p className="mt-8 text-lg leading-relaxed text-neutral-700 sm:text-xl max-w-2xl mx-auto">
+                Multi-tenant e-commerce built with Go microservices, Next.js, and Kubernetes. 
+                <span className="font-medium text-neutral-900"> Scalable, isolated, and developer-first.</span>
               </p>
             </FadeIn>
+            
             <FadeIn delay={0.4}>
               <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
                 <Link href="/register">
-                  <Button size="lg" className="w-full sm:w-auto">
+                  <Button size="lg" className="w-full sm:w-auto gap-2 shadow-lg shadow-brand-700/25 hover:shadow-xl hover:shadow-brand-700/30 transition-all">
                     Start free
-                    <ArrowRight className="ml-1 h-4 w-4" />
+                    <ArrowRight className="h-4 w-4" />
                   </Button>
                 </Link>
                 <Link href="/login">
-                  <Button variant="outline" size="lg" className="w-full sm:w-auto">
+                  <Button variant="outline" size="lg" className="w-full sm:w-auto border-neutral-300 hover:bg-neutral-100">
                     Sign in
                   </Button>
                 </Link>
+              </div>
+            </FadeIn>
+            
+            {/* Trust indicators */}
+            <FadeIn delay={0.5}>
+              <div className="mt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-sm text-neutral-500">
+                <div className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-success" />
+                  <span>No credit card required</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-success" />
+                  <span>Free tier available</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-success" />
+                  <span>Deploy in minutes</span>
+                </div>
               </div>
             </FadeIn>
           </div>
