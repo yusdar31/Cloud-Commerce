@@ -93,3 +93,44 @@ export const authApi = {
     }>();
   },
 };
+
+export const productApi = {
+  list: async (params?: { page?: number; limit?: number; search?: string }) => {
+    const searchParams = new URLSearchParams();
+    if (params?.page) searchParams.set("page", params.page.toString());
+    if (params?.limit) searchParams.set("limit", params.limit.toString());
+    if (params?.search) searchParams.set("search", params.search);
+    
+    return api.get(`api/v1/products?${searchParams}`).json<{
+      data: Array<{
+        id: string;
+        name: string;
+        slug: string;
+        description: string;
+        price: number;
+        currency: string;
+        stock: number;
+        status: string;
+        images: string[];
+        created_at: string;
+      }>;
+    }>();
+  },
+
+  getBySlug: async (slug: string) => {
+    return api.get(`api/v1/products/slug/${slug}`).json<{
+      data: {
+        id: string;
+        name: string;
+        slug: string;
+        description: string;
+        price: number;
+        currency: string;
+        stock: number;
+        status: string;
+        images: string[];
+        created_at: string;
+      };
+    }>();
+  },
+};

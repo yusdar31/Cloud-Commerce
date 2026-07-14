@@ -22,6 +22,7 @@ export const useAuthStore = create<AuthState>()(
           localStorage.setItem("access_token", tokens.access_token);
           localStorage.setItem("refresh_token", tokens.refresh_token);
           localStorage.setItem("tenant_id", user.tenant_id);
+          document.cookie = `access_token=${tokens.access_token}; path=/; max-age=86400; SameSite=Lax`;
         }
         set({ user, tokens, isAuthenticated: true });
       },
@@ -31,6 +32,7 @@ export const useAuthStore = create<AuthState>()(
           localStorage.removeItem("access_token");
           localStorage.removeItem("refresh_token");
           localStorage.removeItem("tenant_id");
+          document.cookie = "access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
         }
         set({ user: null, tokens: null, isAuthenticated: false });
       },

@@ -1,12 +1,9 @@
 -- +goose Up
 -- +goose StatementBegin
 
--- Enable UUID extension
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
 -- Create roles table
 CREATE TABLE IF NOT EXISTS roles (
-    id          UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name        VARCHAR(50) NOT NULL UNIQUE,
     description TEXT,
     created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -19,7 +16,7 @@ CREATE TABLE IF NOT EXISTS roles (
 
 -- Create permissions table
 CREATE TABLE IF NOT EXISTS permissions (
-    id          UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name        VARCHAR(100) NOT NULL UNIQUE,
     description TEXT,
     resource    VARCHAR(100) NOT NULL,
@@ -42,7 +39,7 @@ CREATE TABLE IF NOT EXISTS role_permissions (
 
 -- Create users table
 CREATE TABLE IF NOT EXISTS users (
-    id            UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     email         VARCHAR(255) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     full_name     VARCHAR(255) NOT NULL,
@@ -66,7 +63,7 @@ CREATE INDEX IF NOT EXISTS idx_users_created_at ON users(created_at);
 
 -- Create sessions table
 CREATE TABLE IF NOT EXISTS sessions (
-    id          UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     ip_address  VARCHAR(45),
     user_agent  TEXT,
@@ -84,7 +81,7 @@ CREATE INDEX IF NOT EXISTS idx_sessions_expires_at ON sessions(expires_at);
 
 -- Create refresh_tokens table
 CREATE TABLE IF NOT EXISTS refresh_tokens (
-    id         UUID PRIMARY KEY DEFAULT uuid_generate_v7(),
+    id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id    UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     token      VARCHAR(500) NOT NULL UNIQUE,
     expires_at TIMESTAMPTZ NOT NULL,

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { HTTPError } from "ky";
 import { authApi } from "@/lib/api";
 import { useAuthStore } from "@/stores/auth-store";
 import { Button } from "@/components/ui/button";
@@ -54,8 +55,17 @@ export function LoginForm() {
         response.data.tokens
       );
       router.push("/dashboard");
-    } catch {
-      setError("Invalid email or password. Please try again.");
+    } catch (err) {
+      if (err instanceof HTTPError) {
+        try {
+          const errorData = await err.response.json<{ detail?: string }>();
+          setError(errorData.detail || "Invalid email or password. Please try again.");
+        } catch {
+          setError("Invalid email or password. Please try again.");
+        }
+      } else {
+        setError("An unexpected error occurred. Please try again.");
+      }
     } finally {
       setLoading(false);
     }

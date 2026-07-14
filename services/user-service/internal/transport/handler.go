@@ -54,7 +54,21 @@ func (h *AuthHandler) Register(c *gin.Context) {
 		return
 	}
 
-	response.Created(c, ToUserResponse(user))
+	// Auto-login: generate tokens after successful registration
+	tokens, _, err := h.authService.Login(c.Request.Context(), application.LoginInput{
+		Email:    req.Email,
+		Password: req.Password,
+	})
+	if err != nil {
+		// Registration succeeded but token generation failed; return user only
+		response.Created(c, ToUserResponse(user))
+		return
+	}
+
+	response.Created(c, AuthResponse{
+		Token: ToTokenResponse(tokens),
+		User:  ToUserResponse(user),
+	})
 }
 
 // Login handles POST /api/v1/auth/login.

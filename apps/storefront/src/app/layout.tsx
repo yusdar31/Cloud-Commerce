@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Poppins, Open_Sans } from "next/font/google";
 import { QueryProvider } from "@/components/providers/query-provider";
+import { Header } from "@/components/layout/header";
 import "./globals.css";
 
 const poppins = Poppins({
@@ -42,7 +43,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${poppins.variable} ${openSans.variable}`} suppressHydrationWarning>
       <body className="font-body antialiased">
-        <QueryProvider>{children}</QueryProvider>
+        <QueryProvider>
+          <Header />
+          {children}
+        </QueryProvider>
       </body>
     </html>
   );

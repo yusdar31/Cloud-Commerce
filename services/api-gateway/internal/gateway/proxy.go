@@ -51,6 +51,15 @@ func NewRouter(configs []ServiceConfig) *Router {
 				}
 			}
 		}
+		proxy.ModifyResponse = func(resp *http.Response) error {
+			resp.Header.Del("Access-Control-Allow-Origin")
+			resp.Header.Del("Access-Control-Allow-Methods")
+			resp.Header.Del("Access-Control-Allow-Headers")
+			resp.Header.Del("Access-Control-Allow-Credentials")
+			resp.Header.Del("Access-Control-Expose-Headers")
+			resp.Header.Del("Access-Control-Max-Age")
+			return nil
+		}
 		proxy.ErrorHandler = func(w http.ResponseWriter, r *http.Request, err error) {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusBadGateway)
@@ -121,6 +130,12 @@ func DefaultConfigs() []ServiceConfig {
 			BasePath:  "/api/v1/users",
 			TargetURL: getServiceURL("USER_SERVICE_URL", "http://localhost:8081"),
 			Protected: true,
+		},
+		{
+			Name:      "store-service",
+			BasePath:  "/api/v1/stores",
+			TargetURL: getServiceURL("STORE_SERVICE_URL", "http://localhost:8082"),
+			Protected: false,
 		},
 		{
 			Name:      "catalog-service",

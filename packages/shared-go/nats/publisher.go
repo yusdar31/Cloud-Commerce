@@ -32,6 +32,14 @@ func NewPublisher(natsURL string) (*Publisher, error) {
 		return nil, fmt.Errorf("failed to create JetStream context: %w", err)
 	}
 
+	// Automatically bootstrap "cloudcommerce" JetStream stream
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	_, _ = js.CreateOrUpdateStream(ctx, jetstream.StreamConfig{
+		Name:     "cloudcommerce",
+		Subjects: []string{"order.*", "payment.*", "inventory.*", "notification.*", "tenant.*"},
+	})
+
 	return &Publisher{
 		nc: nc,
 		js: js,

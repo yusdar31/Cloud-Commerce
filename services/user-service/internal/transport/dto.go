@@ -11,7 +11,7 @@ import (
 type RegisterRequest struct {
 	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required,min=8,max=72"`
-	FullName string `json:"fullName" validate:"required,min=2,max=100"`
+	FullName string `json:"full_name" validate:"required,min=2,max=100"`
 	Phone    string `json:"phone" validate:"omitempty,min=10,max=20"`
 	Role     string `json:"role" validate:"omitempty,oneof=seller buyer admin"`
 }
@@ -24,32 +24,32 @@ type LoginRequest struct {
 
 // RefreshRequest is the DTO for token refresh.
 type RefreshRequest struct {
-	RefreshToken string `json:"refreshToken" validate:"required"`
+	RefreshToken string `json:"refresh_token" validate:"required"`
 }
 
 // UserResponse is the DTO for user data in API responses.
 type UserResponse struct {
 	ID        string    `json:"id"`
 	Email     string    `json:"email"`
-	FullName  string    `json:"fullName"`
+	FullName  string    `json:"full_name"`
 	Phone     string    `json:"phone,omitempty"`
 	Role      string    `json:"role"`
-	TenantID  string    `json:"tenantId,omitempty"`
-	IsActive  bool      `json:"isActive"`
-	CreatedAt time.Time `json:"createdAt"`
+	TenantID  string    `json:"tenant_id,omitempty"`
+	IsActive  bool      `json:"is_active"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 // TokenResponse is the DTO for authentication tokens.
 type TokenResponse struct {
-	AccessToken  string    `json:"accessToken"`
-	RefreshToken string    `json:"refreshToken"`
-	ExpiresAt    time.Time `json:"expiresAt"`
-	TokenType    string    `json:"tokenType"`
+	AccessToken  string    `json:"access_token"`
+	RefreshToken string    `json:"refresh_token"`
+	ExpiresAt    time.Time `json:"expires_at"`
+	TokenType    string    `json:"token_type"`
 }
 
 // AuthResponse combines user and token data.
 type AuthResponse struct {
-	Token TokenResponse `json:"token"`
+	Token TokenResponse `json:"tokens"`
 	User  UserResponse  `json:"user"`
 }
 

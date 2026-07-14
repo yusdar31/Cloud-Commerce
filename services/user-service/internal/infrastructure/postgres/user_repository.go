@@ -9,6 +9,7 @@ import (
 
 	"github.com/cloudcommerce/user-service/internal/domain"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -28,11 +29,26 @@ func (r *UserRepository) Create(ctx context.Context, user *domain.User) error {
 		INSERT INTO users (id, email, password_hash, full_name, phone, role, tenant_id, is_active, created_at, updated_at)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 	`
+
+	// Convert empty strings to nil for nullable columns
+	var tenantID interface{}
+	if user.TenantID != "" {
+		tenantID = user.TenantID
+	}
+	var phone interface{}
+	if user.Phone != "" {
+		phone = user.Phone
+	}
+
 	_, err := r.pool.Exec(ctx, query,
-		user.ID, user.Email, user.PasswordHash, user.FullName, user.Phone,
-		string(user.Role), user.TenantID, user.IsActive, user.CreatedAt, user.UpdatedAt,
+		user.ID, user.Email, user.PasswordHash, user.FullName, phone,
+		string(user.Role), tenantID, user.IsActive, user.CreatedAt, user.UpdatedAt,
 	)
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+			return domain.ErrEmailAlreadyExists
+		}
 		return fmt.Errorf("insert user: %w", err)
 	}
 	return nil

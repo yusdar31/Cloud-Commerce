@@ -27,6 +27,11 @@ const (
 	// Notification events
 	SubjectNotificationEmail = "notification.email"
 	SubjectNotificationSMS   = "notification.sms"
+
+	// Tenant events
+	SubjectTenantCreated   = "tenant.created"
+	SubjectTenantActivated = "tenant.activated"
+	SubjectTenantSuspended = "tenant.suspended"
 )
 
 // BaseEvent contains common fields for all events.
@@ -35,6 +40,14 @@ type BaseEvent struct {
 	Timestamp time.Time `json:"timestamp"`
 	TenantID  string    `json:"tenant_id"`
 	UserID    string    `json:"user_id,omitempty"`
+}
+
+// TenantCreatedEvent is published when a new store/tenant is created.
+type TenantCreatedEvent struct {
+	BaseEvent
+	OwnerID     string `json:"owner_id"`
+	TenantName  string `json:"tenant_name"`
+	TenantSlug  string `json:"tenant_slug"`
 }
 
 // OrderCreatedEvent is published when a new order is created.
