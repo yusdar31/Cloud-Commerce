@@ -14,6 +14,11 @@ export function Header() {
   const { user, isAuthenticated, clearAuth } = useAuthStore();
   const itemCount = getItemCount();
 
+  // Hide header on landing page and auth pages
+  if (pathname === "/" || pathname === "/login" || pathname === "/register") {
+    return null;
+  }
+
   const handleLogout = () => {
     clearAuth();
     router.push("/");
