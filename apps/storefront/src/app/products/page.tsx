@@ -7,6 +7,7 @@ import { useCartStore } from "@/stores/cart-store";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Header } from "@/components/layout/header";
 import { Search, ShoppingCart } from "lucide-react";
 
 interface Product {
@@ -83,6 +84,7 @@ export default function ProductsPage() {
 
   return (
     <div className="min-h-screen bg-neutral-100">
+      <Header />
       {/* Header */}
       <div className="bg-white border-b border-neutral-300">
         <div className="container mx-auto px-4 py-6">

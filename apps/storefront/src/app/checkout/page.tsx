@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Header } from "@/components/layout/header";
 import { ArrowLeft, CreditCard } from "lucide-react";
 
 export default function CheckoutPage() {
@@ -48,6 +49,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen bg-neutral-100">
+      <Header />
       <div className="bg-white border-b border-neutral-300">
         <div className="container mx-auto px-4 py-6">
           <Button variant="ghost" onClick={() => router.back()} className="gap-2">

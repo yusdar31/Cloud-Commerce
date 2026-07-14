@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Header } from "@/components/layout/header";
 import { CheckCircle } from "lucide-react";
 
 export default function OrderSuccessPage() {
@@ -10,6 +11,7 @@ export default function OrderSuccessPage() {
 
   return (
     <div className="min-h-screen bg-neutral-100 flex items-center justify-center p-4">
+      <Header />
       <Card className="max-w-lg w-full">
         <CardContent className="p-12 text-center">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-success/10 rounded-full mb-6">
