@@ -1,0 +1,215 @@
+services:
+  # ========== Infrastructure ==========
+  postgres:
+    image: postgres:17-alpine
+    container_name: cc-postgres
+    environment:
+      POSTGRES_DB: cloudcommerce
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/dev/init-databases.sql:/docker-entrypoint-initdb.d/init-databases.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: cc-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  nats:
+    image: nats:2.10-alpine
+    container_name: cc-nats
+    command: ["--jetstream", "--store_dir", "/data"]
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    volumes:
+      - nats_data:/data
+    healthcheck:
+      test: ["CMD", "nats-server", "--signal", "ldm=/data"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ========== Application Services ==========
+  api-gateway:
+    build:
+      context: .
+      dockerfile: services/api-gateway/Dockerfile
+    container_name: cc-api-gateway
+    environment:
+      PORT: "8080"
+      JWT_SECRET: "dev-secret-change-me"
+      NATS_URL: "nats://nats:4222"
+      REDIS_URL: "redis://redis:6379"
+      USER_SERVICE_URL: "http://user-service:8081"
+      PRODUCT_SERVICE_URL: "http://product-service:8083"
+      APP_ENV: "development"
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      nats:
+        condition: service_healthy
+
+  user-service:
+    build:
+      context: .
+      dockerfile: services/user-service/Dockerfile
+    container_name: cc-user-service
+    environment:
+      PORT: "8081"
+      DATABASE_URL: "postgres://postgres:postgres@postgres:5432/identity_db?sslmode=disable"
+      REDIS_URL: "redis://redis:6379"
+      JWT_SECRET: "dev-secret-change-me"
+      JWT_EXPIRY: "24h"
+      APP_ENV: "development"
+    ports:
+      - "8081:8081"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  store-service:
+    build:
+      context: .
+      dockerfile: services/store-service/Dockerfile
+    container_name: cc-store-service
+    environment:
+      PORT: "8082"
+      DATABASE_URL: "postgres://postgres:postgres@postgres:5432/tenant_db?sslmode=disable"
+      JWT_SECRET: "dev-secret-change-me"
+    ports:
+      - "8082:8082"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  product-service:
+    build:
+      context: .
+      dockerfile: services/product-service/Dockerfile
+    container_name: cc-product-service
+    environment:
+      PORT: "8083"
+      DATABASE_URL: "postgres://postgres:postgres@postgres:5432/catalog_db?sslmode=disable"
+      REDIS_URL: "redis://redis:6379"
+      JWT_SECRET: "dev-secret-change-me"
+      JWT_EXPIRY: "24h"
+      APP_ENV: "development"
+    ports:
+      - "8083:8083"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  inventory-service:
+    build:
+      context: .
+      dockerfile: services/inventory-service/Dockerfile
+    container_name: cc-inventory-service
+    environment:
+      PORT: "8084"
+      DATABASE_URL: "postgres://postgres:postgres@postgres:5432/inventory_db?sslmode=disable"
+      JWT_SECRET: "dev-secret-change-me"
+    ports:
+      - "8084:8084"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  order-service:
+    build:
+      context: .
+      dockerfile: services/order-service/Dockerfile
+    container_name: cc-order-service
+    environment:
+      PORT: "8085"
+      DATABASE_URL: "postgres://postgres:postgres@postgres:5432/order_db?sslmode=disable"
+      NATS_URL: "nats://nats:4222"
+      JWT_SECRET: "dev-secret-change-me"
+    ports:
+      - "8085:8085"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      nats:
+        condition: service_healthy
+
+  payment-service:
+    build:
+      context: .
+      dockerfile: services/payment-service/Dockerfile
+    container_name: cc-payment-service
+    environment:
+      PORT: "8086"
+      DATABASE_URL: "postgres://postgres:postgres@postgres:5432/payment_db?sslmode=disable"
+      NATS_URL: "nats://nats:4222"
+      JWT_SECRET: "dev-secret-change-me"
+    ports:
+      - "8086:8086"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      nats:
+        condition: service_healthy
+
+  notification-service:
+    build:
+      context: .
+      dockerfile: services/notification-service/Dockerfile
+    container_name: cc-notification-service
+    environment:
+      PORT: "8087"
+      DATABASE_URL: "postgres://postgres:postgres@postgres:5432/notification_db?sslmode=disable"
+      NATS_URL: "nats://nats:4222"
+      JWT_SECRET: "dev-secret-change-me"
+    ports:
+      - "8087:8087"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      nats:
+        condition: service_healthy
+
+  review-service:
+    build:
+      context: .
+      dockerfile: services/review-service/Dockerfile
+    container_name: cc-review-service
+    environment:
+      PORT: "8088"
+      DATABASE_URL: "postgres://postgres:postgres@postgres:5432/review_db?sslmode=disable"
+      JWT_SECRET: "dev-secret-change-me"
+    ports:
+      - "8088:8088"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  redis_data:
+  nats_data:

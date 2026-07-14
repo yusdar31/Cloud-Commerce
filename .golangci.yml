@@ -1,0 +1,41 @@
+﻿version: "2"
+linters:
+  enable:
+    - errcheck
+    - govet
+    - staticcheck
+    - gosimple
+    - ineffassign
+    - unused
+    - misspell
+    - gocritic
+    - gofmt
+    - revive
+    - prealloc
+    - gosec
+  settings:
+    govet:
+      enable-all: true
+    gocritic:
+      enabled-tags:
+        - performance
+        - style
+        - diagnostic
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - third_party/
+      - vendor/
+      - generated/
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+formatters:
+  enable:
+    - gofmt
+    - goimports

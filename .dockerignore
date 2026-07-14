@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build artifacts
+.next/
+dist/
+out/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Go
+vendor/
+coverage.out
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docs
+docs/
+
+# Root config (gak perlu di-docker)
+*.md
+.golangci.yml
+.editorconfig
+.prettierrc
+package.json
+turbo.json
+pnpm-workspace.yaml
