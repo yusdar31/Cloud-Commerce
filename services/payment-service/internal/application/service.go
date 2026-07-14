@@ -220,6 +220,11 @@ func (s *PaymentService) HandleWebhook(ctx context.Context, payload []byte, sign
 	return nil
 }
 
+// GetPaymentRepository returns the payment repository for direct access.
+func (s *PaymentService) GetPaymentRepository() domain.PaymentRepository {
+	return s.paymentRepo
+}
+
 // CreatePaymentInput contains data for creating a payment.
 type CreatePaymentInput struct {
 	TenantID      string

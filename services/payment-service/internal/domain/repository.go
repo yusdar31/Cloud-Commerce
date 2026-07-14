@@ -1,6 +1,9 @@
 package domain
 
-import "context"
+import (
+	"context"
+	"time"
+)
 
 // PaymentRepository defines the interface for payment persistence.
 type PaymentRepository interface {

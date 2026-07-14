@@ -9,6 +9,7 @@ const (
 	SubjectOrderUpdated    = "order.updated"
 	SubjectOrderCancelled  = "order.cancelled"
 	SubjectOrderCompleted  = "order.completed"
+	SubjectOrderPaid       = "order.paid"
 
 	// Payment events
 	SubjectPaymentPending   = "payment.pending"
@@ -17,10 +18,11 @@ const (
 	SubjectPaymentRefunded  = "payment.refunded"
 
 	// Inventory events
-	SubjectInventoryReserved = "inventory.reserved"
-	SubjectInventoryReleased = "inventory.released"
-	SubjectInventoryUpdated  = "inventory.updated"
-	SubjectStockLow          = "inventory.stock_low"
+	SubjectInventoryReserved          = "inventory.reserved"
+	SubjectInventoryReleased          = "inventory.released"
+	SubjectInventoryUpdated           = "inventory.updated"
+	SubjectStockLow                   = "inventory.stock_low"
+	SubjectInventoryReservationFailed = "inventory.reservation.failed"
 
 	// Notification events
 	SubjectNotificationEmail = "notification.email"
@@ -39,11 +41,20 @@ type BaseEvent struct {
 type OrderCreatedEvent struct {
 	BaseEvent
 	OrderID      string           `json:"order_id"`
+	OrderNumber  string           `json:"order_number"`
 	CustomerID   string           `json:"customer_id"`
 	Items        []OrderItemEvent `json:"items"`
 	TotalAmount  int64            `json:"total_amount"`
 	Currency     string           `json:"currency"`
 	Status       string           `json:"status"`
+}
+
+// OrderPaidEvent is published when order payment is confirmed.
+type OrderPaidEvent struct {
+	BaseEvent
+	OrderID     string `json:"order_id"`
+	OrderNumber string `json:"order_number"`
+	TotalAmount int64  `json:"total_amount"`
 }
 
 // OrderItemEvent represents an item in an order.
@@ -151,6 +162,22 @@ type InventoryReleasedEvent struct {
 	OrderID       string                  `json:"order_id"`
 	Items         []InventoryItemEvent    `json:"items"`
 	Reason        string                  `json:"reason"`
+}
+
+// InventoryReservationFailedEvent is published when inventory reservation fails.
+type InventoryReservationFailedEvent struct {
+	BaseEvent
+	OrderID string `json:"order_id"`
+	Reason  string `json:"reason"`
+}
+
+// OrderItem is used in OrderCreatedEvent items.
+type OrderItem struct {
+	ProductID  string `json:"product_id"`
+	VariantID  string `json:"variant_id,omitempty"`
+	Quantity   int    `json:"quantity"`
+	UnitPrice  int64  `json:"unit_price"`
+	TotalPrice int64  `json:"total_price"`
 }
 
 // InventoryUpdatedEvent is published when stock levels change.

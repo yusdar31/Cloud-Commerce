@@ -124,7 +124,7 @@ func (h *PaymentHandler) List(c *gin.Context) {
 
 // HandleWebhook handles POST /webhooks/payments/:provider.
 func (h *PaymentHandler) HandleWebhook(c *gin.Context) {
-	provider := c.Param("provider")
+	_ = c.Param("provider") // TODO: route to provider-specific handler
 
 	// Read raw body
 	payload, err := c.GetRawData()
