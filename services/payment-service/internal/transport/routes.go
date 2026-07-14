@@ -1,6 +1,9 @@
 package transport
 
 import (
+	"log/slog"
+
+	"github.com/cloudcommerce/shared-go/idempotency"
 	"github.com/cloudcommerce/shared-go/jwt"
 	"github.com/cloudcommerce/shared-go/middleware"
 	"github.com/gin-gonic/gin"
@@ -11,6 +14,8 @@ func SetupRouter(
 	handler *PaymentHandler,
 	jwtManager *jwt.Manager,
 	serviceName string,
+	idempotencyStore idempotency.Store,
+	logger *slog.Logger,
 ) *gin.Engine {
 	r := gin.New()
 
@@ -41,7 +46,26 @@ func SetupRouter(
 
 	// Public webhook endpoint (no auth - verified by signature)
 	webhooks := r.Group("/webhooks")
-	{
+	if idempotencyStore != nil {
+		// Apply idempotency middleware if store is available
+		webhookMiddleware := idempotency.WebhookMiddleware(
+			idempotencyStore,
+			logger,
+			func(c *gin.Context) string {
+				// Use provider + event ID as idempotency key
+				provider := c.Param("provider")
+				eventID := c.GetHeader("X-Event-ID")
+				if eventID == "" {
+					eventID = c.GetHeader("X-Midtrans-Signature")
+				}
+				if eventID != "" {
+					return provider + ":" + eventID
+				}
+				return ""
+			},
+		)
+		webhooks.POST("/payments/:provider", webhookMiddleware, handler.HandleWebhook)
+	} else {
 		webhooks.POST("/payments/:provider", handler.HandleWebhook)
 	}
 

@@ -14,10 +14,12 @@ import (
 	"github.com/cloudcommerce/payment-service/internal/infrastructure/postgres"
 	"github.com/cloudcommerce/payment-service/internal/transport"
 	"github.com/cloudcommerce/shared-go/config"
+	"github.com/cloudcommerce/shared-go/idempotency"
 	"github.com/cloudcommerce/shared-go/jwt"
 	cclogging "github.com/cloudcommerce/shared-go/logging"
 	"github.com/cloudcommerce/shared-go/nats"
 	ccpostgres "github.com/cloudcommerce/shared-go/postgres"
+	"github.com/redis/go-redis/v9"
 )
 
 func main() {
@@ -58,6 +60,20 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Setup Redis for idempotency
+	var idempotencyStore idempotency.Store
+	redisClient := redis.NewClient(&redis.Options{
+		Addr:     cfg.RedisURL,
+		Password: "",
+		DB:       0,
+	})
+	if err := redisClient.Ping(ctx).Err(); err != nil {
+		logger.Warn("redis not available, idempotency middleware disabled", "error", err)
+	} else {
+		idempotencyStore = idempotency.NewRedisStore(redisClient)
+		logger.Info("redis connected for idempotency")
+	}
+
 	// Wire up repositories
 	paymentRepo := postgres.NewPaymentRepository(pool)
 	webhookRepo := postgres.NewWebhookEventRepository(pool)
@@ -80,7 +96,7 @@ func main() {
 	handler := transport.NewPaymentHandler(paymentService)
 
 	// Setup router
-	router := transport.SetupRouter(handler, jwtManager, "payment-service")
+	router := transport.SetupRouter(handler, jwtManager, "payment-service", idempotencyStore, logger)
 
 	// Start server
 	srv := &http.Server{
